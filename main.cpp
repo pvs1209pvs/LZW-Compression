@@ -3,7 +3,12 @@
 #include <unordered_map>
 #include <fstream>
 
-void encode(const std::string m){
+/**
+ * Utilizes Lempel-Ziv-Welch algorithm to compress the message.
+ * @param m Message to be encoded.
+ * @return Compression percentage. 
+ */
+double encode(const std::string m){
 
     std::string msg{std::move(m)};
 
@@ -12,6 +17,8 @@ void encode(const std::string m){
 
     std::string crnt{};
     int next{-1};
+
+    size_t encoded_msg_len{0};
 
     system("echo -n \"\" > encoded.txt");
 
@@ -28,9 +35,11 @@ void encode(const std::string m){
             
             if(crnt.size()==1){
                 encoded << (int)crnt[0] << std::endl;
+                ++encoded_msg_len;
             }
             else if(crnt.size()>1){
                 encoded << dict[crnt] << std::endl;
+                ++encoded_msg_len;  
             }
             
             crnt += msg[next];
@@ -39,10 +48,10 @@ void encode(const std::string m){
             crnt = msg[next];
 
         }
-
-        
        
     }
+
+    return (double)(msg.size()-encoded_msg_len)/msg.size();
 
 }
 
@@ -53,8 +62,7 @@ int main(int argc, char * argv[]){
         return -1;
     }
     
-    encode(argv[1]);
+    std::cout << "compressed by " << encode(argv[1])*100 << "%" << std::endl;
 
-    std::cout << "check encoded.txt for encoded message." << std::endl;
     return 0;
 }
