@@ -3,16 +3,34 @@
 #include <cstring>
 #include <unordered_map>
 #include <vector>
+#include <algorithm>
 #include <fstream>
+
+const std::string WHITESPACE = " \n\r\t\f\v";
+ 
+std::string ltrim(const std::string& s){
+    size_t start = s.find_first_not_of(WHITESPACE);
+    return (start == std::string::npos) ? "" : s.substr(start);
+}
+ 
+std::string rtrim(const std::string& s){
+    size_t end = s.find_last_not_of(WHITESPACE);
+    return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+ 
+std::string trim(const std::string& s){
+    return rtrim(ltrim(s));
+}
 
 /**
  * Utilizes Lempel-Ziv-Welch algorithm to compress the message.
- * @param filename Textfile containing the plain text..
+ * @param input_file Textfile containing the plain text.
+ * @param output_file Textfile containing the encoded text.
  * @return Compression percentage. 
  */
-double encode(const std::string fileaname){
+double encode(const std::string input_file, const std::string output_file){
 
-    std::ifstream msg_file{fileaname};
+    std::ifstream msg_file{input_file};
     std::string r{};
     std::string msg{};
 
@@ -32,8 +50,9 @@ double encode(const std::string fileaname){
 
     std::ofstream dictonary{"dict.txt"};
 
-    system("echo -n \"\" > encoded.txt");
-    std::ofstream encoded{"encoded.txt", std::ios_base::app};
+    system(std::string{"echo -n \"\" > " + output_file}.c_str());
+    
+    std::ofstream encoded{output_file, std::ios_base::app};
 
     while(next != (int)msg.size()){
 
@@ -67,27 +86,31 @@ double encode(const std::string fileaname){
 }
 
 /**
- * Utilizes Lempel-Ziv-Welch algorithm to decompress the message.
- * @param filename Textfile containing the encoded text.
+ * Utilizes Lempel-Ziv-Welch algorithm to decompress the encoded text.
+ * @param input_file Textfile containing the encoded text.
+ * @param output_file Textfile containing the decoded text.
  */
-void decode(const std::string filename){
+void decode(const std::string input_file, const std::string output_file){
 
     std::ifstream dict_file{"dict.txt"};
     std::string r{};
 
     std::unordered_map<int, std::string> dict{};
 
-    while(std::getline(dict_file, r)){
+    while(std::getline(dict_file, r)){    
+        std::string ops{r};
+        std::reverse(ops.begin(), ops.end());
+
         dict.insert(std::pair<int, std::string>{
-            std::stoi(r.substr(r.find(" ")+1, r.npos)),
-            r.substr(0, r.find(" "))
+            std::stoi(r.substr(r.size()-ops.find(" "), r.npos)),
+            r.substr(0, r.size()-ops.find(" ")-1)
         });
     }
 
     dict_file.close();
 
 
-    std::ifstream encode_file(filename);
+    std::ifstream encode_file(input_file);
     r = std::string{};
 
     std::vector<int> encoded_msg{};
@@ -99,7 +122,7 @@ void decode(const std::string filename){
     encode_file.close();
 
 
-    std::ofstream decoded{"decoded.txt"};
+    std::ofstream decoded{output_file};
     for(auto e : encoded_msg){
         decoded << ((e < 256) ? std::string{(char)e} : dict[e]);
     }
@@ -108,23 +131,27 @@ void decode(const std::string filename){
 
 int main(int argc, char * argv[]){
 
-    if(argc == 3){
-        if(strcmp(argv[1], "-e")==0){
-            std::cout << "compressed by " << encode(argv[2])*100 << "%" << std::endl;
+    switch (argc){
+        case 4: {
+            if(strcmp(argv[1], "-e")==0){
+                std::cout << "compressed by " << encode(argv[2], argv[3])*100 << "%" << std::endl;
+            }
+            else if(strcmp(argv[1], "-d")==0){
+                decode(argv[2], argv[3]);
+            }
+            else{
+                std::cout << "illegal arguments." << std::endl;
+                return -1;
+            }
+            break;
         }
-        else if(strcmp(argv[1], "-d")==0){
-            decode(argv[2]);
-        }
-        else{
-            std::cout << "illegal arguments." << std::endl;
+        default:{
+            std::cout << "not enough arguments." << std::endl;
             return -1;
         }
+
     }
-    else{
-        std::cout << "not enough arguments." << std::endl;
-        return -1;
-    }
-    
+
     return 0;
 
 }
