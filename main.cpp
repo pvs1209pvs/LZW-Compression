@@ -34,18 +34,27 @@ void encode(const std::string m){
             }
             
             crnt += msg[next];
+            
+            //if(crnt.size()==1) std::cout << crnt << std::endl;
+
             dict.insert(std::pair<std::string, int>{crnt,  crnt.size()==1? (int)crnt[0] : ++code });
             crnt = msg[next];
 
         }
+
+        
        
+    }
+
+    for(auto x : dict){
+        std::cout << x.first << " " << x.second << std::endl;
     }
 
 }
 
 int main(){
 
-    encode("thisisthe");
+    encode("banana");
 
     return 0;
 }
