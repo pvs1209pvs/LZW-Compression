@@ -35,8 +35,6 @@ void encode(const std::string m){
             
             crnt += msg[next];
             
-            //if(crnt.size()==1) std::cout << crnt << std::endl;
-
             dict.insert(std::pair<std::string, int>{crnt,  crnt.size()==1? (int)crnt[0] : ++code });
             crnt = msg[next];
 
@@ -46,15 +44,17 @@ void encode(const std::string m){
        
     }
 
-    for(auto x : dict){
-        std::cout << x.first << " " << x.second << std::endl;
-    }
-
 }
 
-int main(){
+int main(int argc, char * argv[]){
 
-    encode("banana");
+    if(argc < 2){
+        std::cout << "not enough arguments. add message to be encoded." << std::endl;
+        return -1;
+    }
+    
+    encode(argv[1]);
 
+    std::cout << "check encoded.txt for encoded message." << std::endl;
     return 0;
 }
