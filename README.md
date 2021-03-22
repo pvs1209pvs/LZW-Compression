@@ -5,4 +5,4 @@ Loseless data compression algoritm that utilizes reoccuring patterns to save dis
 ## Usage
 
 Use `g++ main.cpp` to compile the code.
-Run with `./a.out <message>`.
+Run with `./a.out 'message'`.
