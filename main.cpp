@@ -7,12 +7,21 @@
 
 /**
  * Utilizes Lempel-Ziv-Welch algorithm to compress the message.
- * @param m Message to be encoded.
+ * @param filename Textfile containing the plain text..
  * @return Compression percentage. 
  */
-double encode(const std::string m){
+double encode(const std::string fileaname){
 
-    std::string msg{std::move(m)};
+    std::ifstream msg_file{fileaname};
+    std::string r{};
+    std::string msg{};
+
+    while(std::getline(msg_file, r)){
+        msg += r;
+    }
+
+    msg_file.close();
+    
 
     std::unordered_map<std::string, int> dict{};
     int code = 255;
@@ -57,7 +66,11 @@ double encode(const std::string m){
 
 }
 
-void decode(std::string encode_file_name){
+/**
+ * Utilizes Lempel-Ziv-Welch algorithm to decompress the message.
+ * @param filename Textfile containing the encoded text.
+ */
+void decode(const std::string filename){
 
     std::ifstream dict_file{"dict.txt"};
     std::string r{};
@@ -74,7 +87,7 @@ void decode(std::string encode_file_name){
     dict_file.close();
 
 
-    std::ifstream encode_file(encode_file_name);
+    std::ifstream encode_file(filename);
     r = std::string{};
 
     std::vector<int> encoded_msg{};
@@ -111,7 +124,6 @@ int main(int argc, char * argv[]){
         std::cout << "not enough arguments." << std::endl;
         return -1;
     }
-    
     
     return 0;
 
