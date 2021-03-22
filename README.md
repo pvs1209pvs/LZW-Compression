@@ -8,4 +8,4 @@ Compile using `g++ main.cpp` <br/>
 * Encoding
 `./a.out 'msg.txt' 'encoded.txt'`
 * Decoding
-`./a.out 'encoded.txt' 'decoded.txt'
+`./a.out 'encoded.txt' 'decoded.txt'`
