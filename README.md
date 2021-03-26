@@ -12,6 +12,3 @@ Compile using `g++ main.cpp` <br/>
 `./a.out msg.txt encoded.txt`
 * Decoding
 `./a.out encoded.txt decoded.txt`
-
-## Author
-Paramvir Singh (pvs1209pvs)
